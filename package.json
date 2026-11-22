@@ -1,0 +1,60 @@
+{
+  "name": "nebula-vpn",
+  "version": "1.0.0",
+  "description": "Nebula VPN — десктопный VPN-клиент с разделением трафика (TUN + sing-box)",
+  "main": "main.js",
+  "author": "Nebula",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "smoke": "electron . --smoke",
+    "core:fetch": "node scripts/fetch-core.mjs",
+    "demo": "node scripts/demo-state.mjs",
+    "icons": "node scripts/make-icon.mjs",
+    "test": "node tests/run.mjs && node tests/runtime.mjs",
+    "dist": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^45.4.1",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "app.nebula.vpn",
+    "productName": "Nebula VPN",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "core",
+        "to": "core"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.png",
+      "artifactName": "NebulaVPN-${version}-setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "shortcutName": "Nebula VPN"
+    }
+  }
+}

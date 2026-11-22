@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nebula VPN</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div class="titlebar">
+        <div class="titlebar-brand">
+          <span class="titlebar-dot"></span>
+          <span>Nebula VPN</span>
+        </div>
+        <div class="window-controls">
+          <button id="winMin" title="Свернуть" aria-label="Свернуть">
+            <svg viewBox="0 0 12 12"><path d="M2 6h8" /></svg>
+          </button>
+          <button id="winMax" title="Развернуть" aria-label="Развернуть">
+            <svg viewBox="0 0 12 12"><rect x="2.5" y="2.5" width="7" height="7" rx="1" /></svg>
+          </button>
+          <button id="winClose" class="danger" title="Закрыть" aria-label="Закрыть">
+            <svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" /></svg>
+          </button>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <div class="logo">
+          <div class="logo-mark">
+            <svg viewBox="0 0 24 24"><path d="M5 18V6l14 12V6" /></svg>
+          </div>
+          <div class="logo-text">
+            <strong>Nebula</strong>
+            <span>VPN CLIENT</span>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-item active" data-page="home">
+            <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7" /><path d="M5 10v10h14V10" /></svg>
+            <span>Главная</span>
+          </button>
+          <button class="nav-item" data-page="servers">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" /></svg>
+            <span>Серверы</span>
+          </button>
+          <button class="nav-item" data-page="subs">
+            <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10" /><circle cx="19" cy="18" r="2" /></svg>
+            <span>Подписки</span>
+          </button>
+          <button class="nav-item" data-page="routing">
+            <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5" /><circle cx="18" cy="18" r="2.5" /><path d="M6 8.5V15a3 3 0 003 3h6.5M18 15.5V9a3 3 0 00-3-3H8.5" /></svg>
+            <span>Маршрутизация</span>
+          </button>
+          <button class="nav-item" data-page="logs">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M7 9l3 3-3 3M13 15h4" /></svg>
+            <span>Журнал</span>
+          </button>
+          <button class="nav-item" data-page="settings">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14.2 3h-4.4l-.4 2.7a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2l.4 2.7h4.4l.4-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z" /></svg>
+            <span>Настройки</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="admin-badge" id="adminBadge">
+            <span class="badge-dot"></span>
+            <span id="adminText">Проверка прав…</span>
+          </div>
+          <div class="version" id="appVersion">v1.0.0</div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <h1 id="pageTitle">Главная</h1>
+            <p id="pageSub">Управление подключением</p>
+          </div>
+          <div class="status-pill" id="statusPill" data-status="disconnected">
+            <span class="status-dot"></span>
+            <span id="statusText">Отключено</span>
+          </div>
+        </header>
+
+        <div class="content">
+          <!-- ГЛАВНАЯ -->
+          <section class="page active" id="page-home">
+            <div class="home-grid">
+              <div class="card hero">
+                <div class="orb-wrap">
+                  <span class="orb-ring ring-1"></span>
+                  <span class="orb-ring ring-2"></span>
+                  <span class="orb-ring ring-3"></span>
+                  <button class="orb" id="connectBtn" data-status="disconnected">
+                    <svg viewBox="0 0 24 24"><path d="M12 3v9" /><path d="M6.3 6.3a8 8 0 1011.4 0" /></svg>
+                    <span id="orbLabel">Подключить</span>
+                  </button>
+                </div>
+                <div class="hero-info">
+                  <h2 id="heroTitle">Отключено</h2>
+                  <p id="heroSub">Выберите сервер и нажмите «Подключить»</p>
+                  <div class="session" id="sessionTimer">00:00:00</div>
+                </div>
+              </div>
+
+              <div class="home-side">
+                <div class="card server-card">
+                  <div class="card-label">Выбранный сервер</div>
+                  <div id="serverCardBody" class="server-card-body">
+                    <div class="muted">Сервер не выбран</div>
+                  </div>
+                </div>
+
+                <div class="card traffic-card">
+                  <div class="card-label">Скорость</div>
+                  <div class="traffic-values">
+                    <div class="tval">
+                      <span class="tarrow down">↓</span>
+                      <strong id="speedDown">0</strong>
+                      <em id="unitDown">Б/с</em>
+                    </div>
+                    <div class="tval">
+                      <span class="tarrow up">↑</span>
+                      <strong id="speedUp">0</strong>
+                      <em id="unitUp">Б/с</em>
+                    </div>
+                  </div>
+                  <canvas id="spark" height="72"></canvas>
+                  <div class="totals">
+                    <span>Всего ↓ <b id="totalDown">0 МБ</b></span>
+                    <span>Всего ↑ <b id="totalUp">0 МБ</b></span>
+                  </div>
+                </div>
+
+                <div class="card split-card">
+                  <div class="split-line">
+                    <span>Режим</span>
+                    <strong id="splitSummary">Весь трафик</strong>
+                  </div>
+                  <div class="split-line">
+                    <span>Российские сайты</span>
+                    <strong id="ruSummary">Напрямую</strong>
+                  </div>
+                  <button class="link-btn" data-page-link="routing">Настроить маршрутизацию →</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- СЕРВЕРЫ -->
+          <section class="page" id="page-servers">
+            <div class="toolbar">
+              <div class="search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
+                <input id="serverSearch" type="text" placeholder="Поиск по названию или адресу" />
+              </div>
+              <button class="btn" id="pingAll">
+                <svg viewBox="0 0 24 24"><path d="M4 18l5-6 4 3 7-9" /><path d="M16 6h4v4" /></svg>
+                Проверить пинг
+              </button>
+              <button class="btn primary" id="addLinkBtn">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+                Добавить ссылку
+              </button>
+            </div>
+            <div class="list" id="serverList"></div>
+            <div class="empty" id="emptyServers" hidden>
+              <div class="empty-icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" /></svg>
+              </div>
+              <h3>Серверов пока нет</h3>
+              <p>Добавьте ссылку на сервер или импортируйте подписку.</p>
+              <button class="btn primary" data-page-link="subs">Перейти к подпискам</button>
+            </div>
+          </section>
+
+          <!-- ПОДПИСКИ -->
+          <section class="page" id="page-subs">
+            <div class="card">
+              <h3>Добавить подписку</h3>
+              <p class="hint">Вставьте ссылку на подписку. Поддерживаются VLESS, VMess, Trojan, Shadowsocks, Hysteria2, TUIC и AnyTLS.</p>
+              <div class="form-row">
+                <input id="subUrl" type="text" placeholder="https://example.com/subscription" />
+                <input id="subName" class="short" type="text" placeholder="Название" />
+                <button class="btn primary" id="subAdd">Добавить</button>
+              </div>
+            </div>
+            <div class="list" id="subList"></div>
+          </section>
+
+          <!-- МАРШРУТИЗАЦИЯ -->
+          <section class="page" id="page-routing">
+            <div class="card">
+              <h3>Разделение трафика</h3>
+              <p class="hint">Выберите, какие приложения должны использовать VPN. Остальные пойдут напрямую через ваше обычное подключение.</p>
+              <div class="mode-grid" id="modeGrid">
+                <label class="mode">
+                  <input type="radio" name="splitMode" value="all" />
+                  <div class="mode-body">
+                    <strong>Весь трафик</strong>
+                    <span>Через VPN идёт всё, кроме российских сайтов и локальной сети</span>
+                  </div>
+                </label>
+                <label class="mode">
+                  <input type="radio" name="splitMode" value="only" />
+                  <div class="mode-body">
+                    <strong>Только выбранные</strong>
+                    <span>VPN используют только приложения из списка ниже</span>
+                  </div>
+                </label>
+                <label class="mode">
+                  <input type="radio" name="splitMode" value="except" />
+                  <div class="mode-body">
+                    <strong>Всё, кроме выбранных</strong>
+                    <span>Приложения из списка идут напрямую, остальные через VPN</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="card" id="appsCard">
+              <div class="card-head">
+                <div>
+                  <h3>Приложения</h3>
+                  <p class="hint" id="appsHint">Список используется в режимах «Только выбранные» и «Всё, кроме выбранных».</p>
+                </div>
+                <button class="btn" id="addApp">
+                  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+                  Добавить .exe
+                </button>
+              </div>
+              <div class="chips" id="appList"></div>
+            </div>
+
+            <div class="card">
+              <div class="switch-row">
+                <div>
+                  <strong>Российские сайты напрямую</strong>
+                  <span>Домены и IP из списков geosite-ru и geoip-ru не идут через VPN</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="bypassRu" /><i></i></label>
+              </div>
+              <div class="switch-row">
+                <div>
+                  <strong>Локальная сеть напрямую</strong>
+                  <span>Принтеры, NAS и другие устройства в вашей сети остаются доступны</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="bypassLan" /><i></i></label>
+              </div>
+              <div class="switch-row">
+                <div>
+                  <strong>Блокировать рекламу</strong>
+                  <span>Отсекает домены из geosite-category-ads-all</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="blockAds" /><i></i></label>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Свои правила</h3>
+              <p class="hint">По одному домену в строке или через запятую. Правила применяются сразу после переподключения.</p>
+              <div class="two-col">
+                <label class="field">
+                  <span>Всегда через VPN</span>
+                  <textarea id="proxyDomains" rows="4" placeholder="youtube.com&#10;googlevideo.com"></textarea>
+                </label>
+                <label class="field">
+                  <span>Всегда напрямую</span>
+                  <textarea id="directDomains" rows="4" placeholder="sberbank.ru&#10;gosuslugi.ru"></textarea>
+                </label>
+              </div>
+              <div class="row-end">
+                <button class="btn primary" id="saveDomains">Сохранить правила</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ЖУРНАЛ -->
+          <section class="page" id="page-logs">
+            <div class="card log-card">
+              <div class="card-head">
+                <h3>Журнал ядра</h3>
+                <button class="btn" id="clearLogs">Очистить</button>
+              </div>
+              <pre id="logView" class="log-view"></pre>
+            </div>
+          </section>
+
+          <!-- НАСТРОЙКИ -->
+          <section class="page" id="page-settings">
+            <div class="card">
+              <h3>Общие</h3>
+              <div class="switch-row">
+                <div>
+                  <strong>Запускать при входе в Windows</strong>
+                  <span>Приложение будет доступно в трее после входа в систему</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="launchAtLogin" /><i></i></label>
+              </div>
+              <div class="switch-row">
+                <div>
+                  <strong>Сворачивать в трей</strong>
+                  <span>Кнопка закрытия скрывает окно, VPN продолжает работать</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="closeToTray" /><i></i></label>
+              </div>
+              <div class="switch-row">
+                <div>
+                  <strong>Запускать свёрнутым</strong>
+                  <span>При автозапуске окно не открывается</span>
+                </div>
+                <label class="switch"><input type="checkbox" id="startMinimized" /><i></i></label>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Ядро</h3>
+              <div class="kv-row"><span>sing-box</span><b id="coreVersion">—</b></div>
+              <div class="kv-row"><span>Расположение</span><b class="path" id="corePath">—</b></div>
+              <div class="row">
+                <button class="btn" id="openCore">Открыть папку ядра</button>
+                <button class="btn" id="restartAdmin">Перезапустить от администратора</button>
+              </div>
+              <p class="hint">Для TUN-режима нужны права администратора. Windows запросит их при подключении.</p>
+            </div>
+
+            <div class="card about">
+              <div class="logo-mark small">
+                <svg viewBox="0 0 24 24"><path d="M5 18V6l14 12V6" /></svg>
+              </div>
+              <div>
+                <strong>Nebula VPN</strong>
+                <p>Открытый клиент на Electron + sing-box. Разделение трафика по приложениям, доменам и GeoIP.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal-backdrop" id="modal" hidden>
+      <div class="modal">
+        <h3 id="modalTitle">Заголовок</h3>
+        <p id="modalText" class="hint"></p>
+        <input id="modalInput" type="text" hidden />
+        <textarea id="modalArea" rows="6" hidden></textarea>
+        <div class="modal-actions">
+          <button class="btn" id="modalCancel">Отмена</button>
+          <button class="btn primary" id="modalOk">Добавить</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" hidden></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
